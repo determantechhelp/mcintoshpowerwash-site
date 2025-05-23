@@ -82,17 +82,46 @@ document.addEventListener('DOMContentLoaded', async function () {
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('review-form');
     const reviewsList = document.getElementById('reviews-list');
+    
+    // Fetch and display existing reviews
+    async function loadReviews() {
+        try {
+            const res = await fetch('http://localhost:3000/reviews'); // Adjust port if needed
+            const reviews = await res.json();
+            reviewsList.innerHTML = '';
+            reviews.reverse().forEach(review => {
+                const reviewDiv = document.createElement('div');
+                reviewDiv.className = 'review-item';
+                reviewDiv.innerHTML = `<strong>${review.name}</strong><br><span>${review.text}</span><hr>`;
+                reviewsList.appendChild(reviewDiv);
+            });
+        } catch (err) {
+            reviewsList.innerHTML = '<em>Unable to load reviews.</em>';
+        }
+    }
+
     if(form && reviewsList) {
-        form.addEventListener('submit', function(e) {
+        loadReviews();
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
             const name = document.getElementById('reviewer').value.trim();
             const text = document.getElementById('review-text').value.trim();
             if(name && text) {
-                const reviewDiv = document.createElement('div');
-                reviewDiv.className = 'review-item';
-                reviewDiv.innerHTML = `<strong>${name}</strong><br><span>${text}</span><hr>`;
-                reviewsList.prepend(reviewDiv);
-                form.reset();
+                try {
+                    const res = await fetch('http://localhost:3000/reviews', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, text })
+                    });
+                    if(res.ok) {
+                        form.reset();
+                        loadReviews();
+                    } else {
+                        alert('Failed to submit review.');
+                    }
+                } catch (err) {
+                    alert('Error submitting review.');
+                }
             }
         });
     }
