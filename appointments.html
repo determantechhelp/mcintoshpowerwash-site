@@ -2,66 +2,62 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>McIntosh Powerwash - Appointments</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- FullCalendar CSS + JS -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>McIntosh Powerwash - Appointments</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
 </head>
 
 <body>
-    <header>
-        <img src="logo.png" alt="McIntosh Powerwash Logo" class="header-logo">
-        <h1>McIntosh Powerwash</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home/About</a></li>
-                <li><a href="appointments.html">Appointments</a></li>
-                <li><a href="reviews.html">Reviews</a></li>
-            </ul>
-        </nav>
-    </header>
+  <header>
+    <img src="logo.png" alt="McIntosh Powerwash Logo" class="header-logo" />
+    <h1>McIntosh Powerwash</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home/About</a></li>
+        <li><a href="appointments.html">Appointments</a></li>
+        <li><a href="reviews.html">Reviews</a></li>
+      </ul>
+    </nav>
+  </header>
 
-    <section id="appointments">
-        <h2>Schedule an Appointment</h2>
-        <form>
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required><br><br>
+  <section id="appointments">
+    <h2>Schedule an Appointment</h2>
+    <div id="calendar"></div>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required><br><br>
+    <div id="booking-form" style="display: none;">
+      <form id="appointmentForm">
+        <input type="hidden" id="selected-date" />
 
-            <label for="date">Preferred Date:</label>
-            <label for="calendar">Select Date:</label>
-            <div id="calendar"></div>
-            <input type="hidden" id="date" name="date">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required /><br><br>
 
-            <label for="time">Preferred Time:</label>
-            <input type="time" id="time" name="time"><br><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" required /><br><br>
 
-            <label for="service">Service Needed:</label>
-            <select id="service" name="service">
-                <option value="house">House Wash</option>
-                <option value="driveway">Driveway Cleaning</option>
-                <option value="deck">Deck Cleaning</option>
-                <option value="other">Other</option>
-            </select><br><br>
+        <label for="service">Service Needed:</label>
+        <select id="service">
+          <option value="House Wash">House Wash</option>
+          <option value="Driveway Cleaning">Driveway Cleaning</option>
+          <option value="Deck Cleaning">Deck Cleaning</option>
+          <option value="Other">Other</option>
+        </select><br><br>
 
-            <label for="questions">Questions/Comments:</label><br>
-            <textarea id="questions" name="questions" rows="4" cols="50"></textarea><br><br>
+        <label for="questions">Questions/Comments:</label><br>
+        <textarea id="questions" rows="4" cols="50"></textarea><br><br>
 
-            <input type="submit" value="Submit Appointment Request">
-        </form>
-    </section>
+        <button type="submit">Submit Appointment Request</button>
+      </form>
+    </div>
+  </section>
 
-    <footer>
-        <p>&copy; 2025 McIntosh Powerwash</p>
-    </footer>
+  <footer>
+    <p>&copy; 2025 McIntosh Powerwash</p>
+  </footer>
 
-    <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script src="script.js"></script>
 </body>
 
 </html>
