@@ -4,12 +4,21 @@ document.addEventListener('DOMContentLoaded', async function () {
   const res = await fetch('https://mcintoshpowerwash.onrender.com/busy');
   const busyTimes = await res.json();
 
-  const events = busyTimes.map(slot => ({
-    start: slot.start,
-    end: slot.end,
-    display: 'background',
-    color: '#ff9999'
-  }));
+  // Convert busy slots to full-day blocked events
+  const busyRanges = busyTimes.map(slot => {
+    const start = new Date(slot.start);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+
+    return {
+      start: start.toISOString(),
+      end: end.toISOString(),
+      display: 'background',
+      color: '#ff9999'
+    };
+  });
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'timeGridWeek',
@@ -20,15 +29,23 @@ document.addEventListener('DOMContentLoaded', async function () {
     height: 'auto',
     expandRows: true,
     weekends: true,
-    dayHeaderFormat: { weekday: 'short' }, // Optional: "Mon", "Tue", etc.
-    events,
+    dayHeaderFormat: { weekday: 'short' },
+    events: busyRanges,
+
     select: function(info) {
+      const isBlocked = busyRanges.some(busy =>
+        info.start >= new Date(busy.start) && info.start < new Date(busy.end)
+      );
+
+      if (isBlocked) {
+        alert("Sorry, that day is fully booked.");
+        return;
+      }
+
       document.getElementById('booking-form').style.display = 'block';
       document.getElementById('selected-date').value = info.startStr;
     }
   });
-  
-  
 
   calendar.render();
 
@@ -59,7 +76,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         service: formData.service
       })
     });
-    
 
     const message = await response.text();
     alert(message);
