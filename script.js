@@ -1,10 +1,16 @@
 document.addEventListener('DOMContentLoaded', async function () {
   const calendarEl = document.getElementById('calendar');
+  const loadingOverlay = document.getElementById('loading-overlay'); // Get the loading overlay
 
-  const res = await fetch('https://mcintoshpowerwash.onrender.com/busy');
-  const busyTimes = await res.json();
+  if (loadingOverlay) { // Show loading overlay
+    loadingOverlay.style.display = 'block';
+  }
 
-  // 🔴 Group busy slots by date and mark full days
+  try { // Wrap the fetch and calendar rendering in a try block
+    const res = await fetch('https://mcintoshpowerwash.onrender.com/busy');
+    const busyTimes = await res.json();
+
+    // 🔴 Group busy slots by date and mark full days
   const busyDays = new Set();
 
   busyTimes.forEach(slot => {
@@ -38,12 +44,31 @@ document.addEventListener('DOMContentLoaded', async function () {
         return;
       }
 
+      // Format the selected time to be more readable
+      const options = { hour: 'numeric', minute: 'numeric', hour12: true };
+      const startTime = info.start.toLocaleTimeString('en-US', options);
+      const endTime = info.end.toLocaleTimeString('en-US', options);
+      const selectedDateStr = info.start.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+      const timeDisplayString = `Selected Slot: ${selectedDateStr}, ${startTime} - ${endTime}`;
+      document.getElementById('selected-time-display').innerHTML = timeDisplayString;
+
       document.getElementById('booking-form').style.display = 'block';
       document.getElementById('selected-date').value = info.startStr;
     }
   });
 
   calendar.render();
+  } catch (error) { // Catch any errors during fetch or calendar setup
+    console.error("Error loading calendar or busy times:", error);
+    if (calendarEl) {
+        calendarEl.innerHTML = "<p>Could not load appointment calendar. Please try refreshing the page.</p>";
+    }
+  } finally { // Hide loading overlay regardless of success or failure
+    if (loadingOverlay) {
+      loadingOverlay.style.display = 'none';
+    }
+  }
 
   document.getElementById('appointmentForm').addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -86,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fetch and display existing reviews
     async function loadReviews() {
         try {
-            const res = await fetch('https://mcintoshpowerwash.onrender.com/reviews'); // Updated URL
+            const res = await fetch('http://localhost:3000/reviews'); // Adjust port if needed
             const reviews = await res.json();
             reviewsList.innerHTML = '';
             reviews.reverse().forEach(review => {
@@ -108,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const text = document.getElementById('review-text').value.trim();
             if(name && text) {
                 try {
-                    const res = await fetch('https://mcintoshpowerwash.onrender.com/reviews', { // Updated URL
+                    const res = await fetch('http://localhost:3000/reviews', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ name, text })
@@ -126,12 +151,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-function showLoading() {
-  const overlay = document.getElementById('loading-overlay');
-  if (overlay) overlay.style.display = 'block';
-}
-function hideLoading() {
-  const overlay = document.getElementById('loading-overlay');
-  if (overlay) overlay.style.display = 'none';
-}
