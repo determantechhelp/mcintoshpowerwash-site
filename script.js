@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fetch and display existing reviews
     async function loadReviews() {
         try {
-            const res = await fetch('http://localhost:3000/reviews'); // Adjust port if needed
+            const res = await fetch('https://mcintoshpowerwash.onrender.com/reviews'); // Updated URL
             const reviews = await res.json();
             reviewsList.innerHTML = '';
             reviews.reverse().forEach(review => {
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const text = document.getElementById('review-text').value.trim();
             if(name && text) {
                 try {
-                    const res = await fetch('http://localhost:3000/reviews', {
+                    const res = await fetch('https://mcintoshpowerwash.onrender.com/reviews', { // Updated URL
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ name, text })
@@ -126,3 +126,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function showLoading() {
+  const overlay = document.getElementById('loading-overlay');
+  if (overlay) overlay.style.display = 'block';
+}
+function hideLoading() {
+  const overlay = document.getElementById('loading-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
