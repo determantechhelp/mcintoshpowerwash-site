@@ -4,21 +4,20 @@ document.addEventListener('DOMContentLoaded', async function () {
   const res = await fetch('https://mcintoshpowerwash.onrender.com/busy');
   const busyTimes = await res.json();
 
-  // Convert busy slots to full-day blocked events
-  const busyRanges = busyTimes.map(slot => {
-    const start = new Date(slot.start);
-    start.setHours(0, 0, 0, 0);
+  // 🔴 Group busy slots by date and mark full days
+  const busyDays = new Set();
 
-    const end = new Date(start);
-    end.setDate(end.getDate() + 1);
-
-    return {
-      start: start.toISOString(),
-      end: end.toISOString(),
-      display: 'background',
-      color: '#ff9999'
-    };
+  busyTimes.forEach(slot => {
+    const date = new Date(slot.start).toISOString().split('T')[0];
+    busyDays.add(date);
   });
+
+  const events = Array.from(busyDays).map(date => ({
+    start: date,
+    end: date,
+    display: 'background',
+    color: '#ff9999'
+  }));
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'timeGridWeek',
@@ -30,15 +29,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     expandRows: true,
     weekends: true,
     dayHeaderFormat: { weekday: 'short' },
-    events: busyRanges,
-
-    select: function(info) {
-      const isBlocked = busyRanges.some(busy =>
-        info.start >= new Date(busy.start) && info.start < new Date(busy.end)
-      );
-
-      if (isBlocked) {
-        alert("Sorry, that day is fully booked.");
+    events,
+    select: function (info) {
+      const clickedDate = info.start.toISOString().split('T')[0];
+      if (busyDays.has(clickedDate)) {
+        alert("❌ This day is fully booked.");
+        calendar.unselect();
         return;
       }
 
