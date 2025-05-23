@@ -78,3 +78,22 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.getElementById('booking-form').style.display = 'none';
   });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('review-form');
+    const reviewsList = document.getElementById('reviews-list');
+    if(form && reviewsList) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('reviewer').value.trim();
+            const text = document.getElementById('review-text').value.trim();
+            if(name && text) {
+                const reviewDiv = document.createElement('div');
+                reviewDiv.className = 'review-item';
+                reviewDiv.innerHTML = `<strong>${name}</strong><br><span>${text}</span><hr>`;
+                reviewsList.prepend(reviewDiv);
+                form.reset();
+            }
+        });
+    }
+});

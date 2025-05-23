@@ -10,28 +10,35 @@
 <body>
     <header>
         <img src="logo.png" alt="McIntosh Powerwash Logo" class="header-logo">
-        <h1>McIntosh Powerwash</h1>
+        <h1><a href="index.html" class="site-title-link">McIntosh Powerwash</a></h1>
         <nav>
             <ul>
-                <li><a href="index.html">Home/About</a></li>
+                <li><a href="index.html">Home</a></li>
                 <li><a href="appointments.html">Appointments</a></li>
                 <li><a href="reviews.html">Reviews</a></li>
             </ul>
         </nav>
     </header>
-
-    <section id="home">
-        <h2>Home & About Us</h2>
-        <img src="your-picture.jpg" alt="James McIntosh" class="about-image">
-        <p>Hi, my name is James McIntosh and I run McIntosh Powerwash. I am currently studying Business Marketing at Virginia Commonwealth University. I got into power washing and realized that I can help many other people with my reliable service and a reasonable price. My goal is to expand my business and make it easy for homeowners and businesses to keep their area clean.</p>
-    </section>
-
-
-
+    <div class="main-container">
+        <section id="home">
+            <h2>About Us</h2>
+            <div class="about-flex">
+                <img src="your-picture.jpg" alt="James McIntosh" class="about-image">
+                <p class="about-text">Hi, my name is James McIntosh and I run McIntosh Powerwash. I am currently studying Business Marketing at Virginia Commonwealth University. I got into power washing and realized that I can help many other people with my reliable service and a reasonable price. My goal is to expand my business and make it easy for homeowners and businesses to keep their area clean.</p>
+            </div>
+        </section>
+        <section id="hours">
+            <h2>Hours</h2>
+            <ul style="list-style:none;padding:0;">
+                <li><strong>Monday - Friday:</strong> 8:00 AM – 6:00 PM</li>
+                <li><strong>Saturday:</strong> 9:00 AM – 4:00 PM</li>
+                <li><strong>Sunday:</strong> 9:00 AM – 4:00 PM</li>
+            </ul>
+        </section>
+    </div>
     <footer>
         <p>&copy; 2025 McIntosh Powerwash</p>
     </footer>
-
     <script src="script.js"></script>
 </body>
 </html>

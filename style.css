@@ -87,12 +87,46 @@ section {
     background: #555;
 }
 
+.about-flex {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+.about-image {
+    flex-shrink: 0;
+}
+.about-text {
+    flex: 1;
+    font-size: 1.15rem;
+    line-height: 1.7;
+    min-width: 220px;
+}
+.site-title-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s, background 0.2s;
+    padding: 0 8px;
+    border-radius: 4px;
+}
+.site-title-link:hover {
+    color: #ededed;
+}
 .about-image {
     display: block;
-    margin: 0 auto 20px auto; /* Center the image and add space below */
-    max-width: 50%; /* Ensure image is responsive */
-    height: auto;
-    border-radius: 8px; /* Optional: add rounded corners */
+    margin: 0 auto 32px auto;
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 1.5px 6px rgba(0,0,0,0.08);
+    border: 4px solid #fff;
+    background: #f4f4f4;
+    transition: box-shadow 0.3s;
+}
+.about-image:hover {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 3px 12px rgba(0,0,0,0.12);
+    /* Remove border-radius and height overrides */
 }
 
 footer {
@@ -151,4 +185,14 @@ footer {
 
 #booking-form form button:hover {
     background-color: #555;
+}
+
+.main-container {
+    width: 80vw;
+    max-width: 1700px;
+    min-width: 320px;
+    margin: 0 auto;
+    background: transparent;
+    box-sizing: border-box;
+    position: relative;
 }
