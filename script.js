@@ -53,9 +53,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         summary: `Appointment: ${formData.name}`,
         description: `Service: ${formData.service}\nEmail: ${formData.email}\nNotes: ${formData.notes}`,
         start,
-        end
+        end,
+        email: formData.email,
+        name: formData.name,
+        service: formData.service
       })
     });
+    
 
     const message = await response.text();
     alert(message);
