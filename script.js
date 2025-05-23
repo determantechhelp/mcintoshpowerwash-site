@@ -1,77 +1,89 @@
 document.addEventListener('DOMContentLoaded', async function () {
   const calendarEl = document.getElementById('calendar');
-  const loadingOverlay = document.getElementById('loading-overlay'); // Get the loading overlay
+  const loadingOverlay = document.getElementById('loading-overlay');
+  const appointmentForm = document.getElementById('appointmentForm'); // Get the appointment form
 
-  if (loadingOverlay) { // Show loading overlay
+  if (loadingOverlay) {
     loadingOverlay.style.display = 'block';
   }
 
-  try { // Wrap the fetch and calendar rendering in a try block
-    const res = await fetch('https://mcintoshpowerwash.onrender.com/busy');
-    const busyTimes = await res.json();
+  // Calendar and busy times logic (only if calendarEl exists)
+  if (calendarEl) {
+    try {
+      const res = await fetch('https://mcintoshpowerwash.onrender.com/busy');
+      const busyTimes = await res.json();
 
-    // 🔴 Group busy slots by date and mark full days
-  const busyDays = new Set();
+      const busyDays = new Set();
+      busyTimes.forEach(slot => {
+        const date = new Date(slot.start).toISOString().split('T')[0];
+        busyDays.add(date);
+      });
 
-  busyTimes.forEach(slot => {
-    const date = new Date(slot.start).toISOString().split('T')[0];
-    busyDays.add(date);
-  });
+      const events = Array.from(busyDays).map(date => ({
+        start: date,
+        end: date,
+        display: 'background',
+        color: '#ff9999'
+      }));
 
-  const events = Array.from(busyDays).map(date => ({
-    start: date,
-    end: date,
-    display: 'background',
-    color: '#ff9999'
-  }));
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        selectable: true,
+        slotMinTime: '09:00:00',
+        slotMaxTime: '20:00:00',
+        allDaySlot: false,
+        height: 'auto',
+        expandRows: true,
+        weekends: true,
+        dayHeaderFormat: { weekday: 'short' },
+        events,
+        select: function (info) {
+          const clickedDate = info.start.toISOString().split('T')[0];
+          if (busyDays.has(clickedDate)) {
+            alert("❌ This day is fully booked.");
+            calendar.unselect();
+            return;
+          }
 
-  const calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'timeGridWeek',
-    selectable: true,
-    slotMinTime: '09:00:00',
-    slotMaxTime: '20:00:00',
-    allDaySlot: false,
-    height: 'auto',
-    expandRows: true,
-    weekends: true,
-    dayHeaderFormat: { weekday: 'short' },
-    events,
-    select: function (info) {
-      const clickedDate = info.start.toISOString().split('T')[0];
-      if (busyDays.has(clickedDate)) {
-        alert("❌ This day is fully booked.");
-        calendar.unselect();
-        return;
+          const options = { hour: 'numeric', minute: 'numeric', hour12: true };
+          const startTime = info.start.toLocaleTimeString('en-US', options);
+          const endTime = info.end.toLocaleTimeString('en-US', options);
+          const selectedDateStr = info.start.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+          const timeDisplayString = `Selected Slot: ${selectedDateStr}, ${startTime} - ${endTime}`;
+          const selectedTimeDisplay = document.getElementById('selected-time-display');
+          if (selectedTimeDisplay) {
+            selectedTimeDisplay.innerHTML = timeDisplayString;
+          }
+          
+          const bookingForm = document.getElementById('booking-form');
+          if (bookingForm) {
+            bookingForm.style.display = 'block';
+          }
+          const selectedDateInput = document.getElementById('selected-date');
+          if (selectedDateInput) {
+            selectedDateInput.value = info.startStr;
+          }
+        }
+      });
+
+      calendar.render();
+    } catch (error) {
+      console.error("Error loading calendar or busy times:", error);
+      calendarEl.innerHTML = "<p>Could not load appointment calendar. Please try refreshing the page.</p>";
+    } finally {
+      if (loadingOverlay) {
+        loadingOverlay.style.display = 'none';
       }
-
-      // Format the selected time to be more readable
-      const options = { hour: 'numeric', minute: 'numeric', hour12: true };
-      const startTime = info.start.toLocaleTimeString('en-US', options);
-      const endTime = info.end.toLocaleTimeString('en-US', options);
-      const selectedDateStr = info.start.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-      const timeDisplayString = `Selected Slot: ${selectedDateStr}, ${startTime} - ${endTime}`;
-      document.getElementById('selected-time-display').innerHTML = timeDisplayString;
-
-      document.getElementById('booking-form').style.display = 'block';
-      document.getElementById('selected-date').value = info.startStr;
     }
-  });
-
-  calendar.render();
-  } catch (error) { // Catch any errors during fetch or calendar setup
-    console.error("Error loading calendar or busy times:", error);
-    if (calendarEl) {
-        calendarEl.innerHTML = "<p>Could not load appointment calendar. Please try refreshing the page.</p>";
-    }
-  } finally { // Hide loading overlay regardless of success or failure
-    if (loadingOverlay) {
+  } else if (loadingOverlay) { // If not on calendar page, still hide overlay if it exists
       loadingOverlay.style.display = 'none';
-    }
   }
 
-  document.getElementById('appointmentForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
+  // Appointment form submission logic (only if appointmentForm exists)
+  if (appointmentForm) {
+    appointmentForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
 
     const formData = {
       name: document.getElementById('name').value,
@@ -100,8 +112,12 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     const message = await response.text();
     alert(message);
-    document.getElementById('booking-form').style.display = 'none';
-  });
+    const bookingForm = document.getElementById('booking-form');
+    if (bookingForm) {
+      bookingForm.style.display = 'none';
+    }
+    });
+  }
 });
 
 document.addEventListener('DOMContentLoaded', function() {
