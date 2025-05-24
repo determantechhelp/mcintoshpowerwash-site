@@ -120,25 +120,26 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 });
 
-async function loadGoogleMapsScript() {
+async function loadGooglePlacesScript() {
   const res = await fetch('https://mcintoshpowerwash.onrender.com/places-api-key');
-  const { key } = await res.json();
-  if (!key) { console.error('Google Maps API key missing!'); return; }
+  const data = await res.json();
   const script = document.createElement('script');
-  script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&callback=initAutocomplete`;
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=places`;
   script.async = true;
-  document.body.appendChild(script);
+  script.onload = function() {
+    const locationInput = document.getElementById('location');
+    if (locationInput && window.google && window.google.maps && window.google.maps.places) {
+      new google.maps.places.Autocomplete(locationInput, {
+        types: ['address'],
+        componentRestrictions: { country: 'us' }
+      });
+    }
+  };
+  document.head.appendChild(script);
 }
 
-function initAutocomplete() {
-  const locationInput = document.getElementById('location');
-  if (locationInput) {
-    // Use PlaceAutocompleteElement here for new customers
-    // ...
-  }
-}
-
-document.addEventListener('DOMContentLoaded', loadGoogleMapsScript);
+document.addEventListener('DOMContentLoaded', function() {
+  loadGooglePlacesScript();
     const form = document.getElementById('review-form');
     const reviewsList = document.getElementById('reviews-list');
     
