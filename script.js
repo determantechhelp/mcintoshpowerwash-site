@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           if (selectedTimeDisplay) {
             selectedTimeDisplay.innerHTML = timeDisplayString;
           }
-          
+
           const bookingForm = document.getElementById('booking-form');
           if (bookingForm) {
             bookingForm.style.display = 'block';
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
     }
   } else if (loadingOverlay) { // If not on calendar page, still hide overlay if it exists
-      loadingOverlay.style.display = 'none';
+    loadingOverlay.style.display = 'none';
   }
 
   // Appointment form submission logic (only if appointmentForm exists)
@@ -85,37 +85,37 @@ document.addEventListener('DOMContentLoaded', async function () {
     appointmentForm.addEventListener('submit', async function (e) {
       e.preventDefault();
 
-    const formData = {
-      name: document.getElementById('name').value,
-      email: document.getElementById('email').value,
-      date: document.getElementById('selected-date').value,
-      service: document.getElementById('service').value,
-      notes: document.getElementById('questions').value
-    };
+      const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        date: document.getElementById('selected-date').value,
+        service: document.getElementById('service').value,
+        notes: document.getElementById('questions').value
+      };
 
-    const start = formData.date;
-    const end = new Date(new Date(start).getTime() + 60 * 60 * 1000).toISOString();
+      const start = formData.date;
+      const end = new Date(new Date(start).getTime() + 60 * 60 * 1000).toISOString();
 
-    const response = await fetch('https://mcintoshpowerwash.onrender.com/create-event', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        summary: `Appointment: ${formData.name}`,
-        description: `Service: ${formData.service}\nEmail: ${formData.email}\nNotes: ${formData.notes}`,
-        start,
-        end,
-        email: formData.email,
-        name: formData.name,
-        service: formData.service
-      })
-    });
+      const response = await fetch('https://mcintoshpowerwash.onrender.com/create-event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          summary: `Appointment: ${formData.name}`,
+          description: `Service: ${formData.service}\nEmail: ${formData.email}\nNotes: ${formData.notes}`,
+          start,
+          end,
+          email: formData.email,
+          name: formData.name,
+          service: formData.service
+        })
+      });
 
-    const message = await response.text();
-    alert(message);
-    const bookingForm = document.getElementById('booking-form');
-    if (bookingForm) {
-      bookingForm.style.display = 'none';
-    }
+      const message = await response.text();
+      alert(message);
+      const bookingForm = document.getElementById('booking-form');
+      if (bookingForm) {
+        bookingForm.style.display = 'none';
+      }
     });
   }
 });
@@ -123,10 +123,16 @@ document.addEventListener('DOMContentLoaded', async function () {
 async function loadGooglePlacesScript() {
   const res = await fetch('https://mcintoshpowerwash.onrender.com/places-api-key');
   const data = await res.json();
+  const apiKey = data.key;
+
+  // Create a script tag and define the callback function
   const script = document.createElement('script');
-  script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=places`;
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`; // Notice the 'callback=initMap'
   script.async = true;
-  script.onload = function() {
+  script.defer = true; // Add defer for better performance
+
+  // Define the global callback function
+  window.initMap = function () {
     const locationInput = document.getElementById('location');
     if (locationInput && window.google && window.google.maps && window.google.maps.places) {
       new google.maps.places.Autocomplete(locationInput, {
@@ -134,55 +140,58 @@ async function loadGooglePlacesScript() {
         componentRestrictions: { country: 'us' }
       });
     }
+    // Clean up the global callback to avoid polluting the global scope unnecessarily
+    delete window.initMap;
   };
+
   document.head.appendChild(script);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   loadGooglePlacesScript();
-    const form = document.getElementById('review-form');
-    const reviewsList = document.getElementById('reviews-list');
-    
-    // Fetch and display existing reviews
-    async function loadReviews() {
-        try {
-            const res = await fetch('https://mcintoshpowerwash.onrender.com/reviews'); // Updated URL
-            const reviews = await res.json();
-            reviewsList.innerHTML = '';
-            reviews.reverse().forEach(review => {
-                const reviewDiv = document.createElement('div');
-                reviewDiv.className = 'review-item';
-                reviewDiv.innerHTML = `<strong>${review.name}</strong><br><span>${review.text}</span><hr>`;
-                reviewsList.appendChild(reviewDiv);
-            });
-        } catch (err) {
-            reviewsList.innerHTML = '<em>Unable to load reviews.</em>';
-        }
-    }
+  const form = document.getElementById('review-form');
+  const reviewsList = document.getElementById('reviews-list');
 
-    if(form && reviewsList) {
-        loadReviews();
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const name = document.getElementById('reviewer').value.trim();
-            const text = document.getElementById('review-text').value.trim();
-            if(name && text) {
-                try {
-                    const res = await fetch('https://mcintoshpowerwash.onrender.com/reviews', { // Updated URL
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name, text })
-                    });
-                    if(res.ok) {
-                        form.reset();
-                        loadReviews();
-                    } else {
-                        alert('Failed to submit review.');
-                    }
-                } catch (err) {
-                    alert('Error submitting review.');
-                }
-            }
-        });
+  // Fetch and display existing reviews
+  async function loadReviews() {
+    try {
+      const res = await fetch('https://mcintoshpowerwash.onrender.com/reviews'); // Updated URL
+      const reviews = await res.json();
+      reviewsList.innerHTML = '';
+      reviews.reverse().forEach(review => {
+        const reviewDiv = document.createElement('div');
+        reviewDiv.className = 'review-item';
+        reviewDiv.innerHTML = `<strong>${review.name}</strong><br><span>${review.text}</span><hr>`;
+        reviewsList.appendChild(reviewDiv);
+      });
+    } catch (err) {
+      reviewsList.innerHTML = '<em>Unable to load reviews.</em>';
     }
+  }
+
+  if (form && reviewsList) {
+    loadReviews();
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const name = document.getElementById('reviewer').value.trim();
+      const text = document.getElementById('review-text').value.trim();
+      if (name && text) {
+        try {
+          const res = await fetch('https://mcintoshpowerwash.onrender.com/reviews', { // Updated URL
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, text })
+          });
+          if (res.ok) {
+            form.reset();
+            loadReviews();
+          } else {
+            alert('Failed to submit review.');
+          }
+        } catch (err) {
+          alert('Error submitting review.');
+        }
+      }
+    });
+  }
 });
