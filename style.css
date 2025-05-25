@@ -196,3 +196,52 @@ footer {
     box-sizing: border-box;
     position: relative;
 }
+
+@media (max-width: 700px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    padding: 1rem 10px;
+  }
+  .header-logo {
+    margin-bottom: 10px;
+    margin-right: 0;
+  }
+  header nav ul {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
+  }
+  header nav ul li {
+    display: block;
+    margin: 8px 0;
+    text-align: left;
+  }
+  .main-container, #appointments {
+    width: 98vw;
+    margin: 0 auto;
+    padding: 5px;
+  }
+  section {
+    margin: 10px 0;
+    padding: 10px;
+  }
+  .about-flex {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .about-image {
+    width: 180px;
+    height: 180px;
+  }
+  #calendar {
+    font-size: 0.95em;
+  }
+  #booking-form form input,
+  #booking-form form select,
+  #booking-form form textarea {
+    font-size: 1em;
+  }
+}

@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         weekends: true,
         dayHeaderFormat: { weekday: 'short' },
         events,
+        longPressDelay: 10, // Add this line or adjust the value (e.g., 0 or 50)
         select: function (info) {
           const clickedDate = info.start.toISOString().split('T')[0];
           if (busyDays.has(clickedDate)) {
