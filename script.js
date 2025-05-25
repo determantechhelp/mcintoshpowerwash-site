@@ -27,17 +27,18 @@ document.addEventListener('DOMContentLoaded', async function () {
       }));
 
       const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'timeGridWeek',
+        initialView: window.innerWidth < 768 ? 'timeGridDay' : 'timeGridWeek',
         selectable: true,
         slotMinTime: '09:00:00',
         slotMaxTime: '20:00:00',
+        selectMirror: true,
         allDaySlot: false,
         height: 'auto',
         expandRows: true,
         weekends: true,
         dayHeaderFormat: { weekday: 'short' },
         events,
-        longPressDelay: 10, // Add this line or adjust the value (e.g., 0 or 50)
+        longPressDelay: 0, // Add this line or adjust the value (e.g., 0 or 50)
         select: function (info) {
           const clickedDate = info.start.toISOString().split('T')[0];
           if (busyDays.has(clickedDate)) {
@@ -69,6 +70,25 @@ document.addEventListener('DOMContentLoaded', async function () {
       });
 
       calendar.render();
+      // ✅ Add this touch handler to simulate tap selection on mobile
+      calendarEl.addEventListener('touchend', function (e) {
+        const targetCell = e.target.closest('.fc-timegrid-slot');
+        if (targetCell && !targetCell.classList.contains('fc-disabled')) {
+          const cellTime = targetCell.getAttribute('data-time');
+          const cellDate = targetCell.closest('[data-date]')?.getAttribute('data-date');
+          if (cellTime && cellDate) {
+            const start = new Date(`${cellDate}T${cellTime}`);
+            const end = new Date(start.getTime() + 30 * 60 * 1000); // adjust duration if needed
+
+            calendar.select({
+              start,
+              end,
+              allDay: false
+            });
+          }
+        }
+      });
+
     } catch (error) {
       console.error("Error loading calendar or busy times:", error);
       calendarEl.innerHTML = "<p>Could not load appointment calendar. Please try refreshing the page.</p>";
